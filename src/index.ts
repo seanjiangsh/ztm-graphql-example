@@ -1,61 +1,16 @@
+import path from "path";
 import express from "express";
-import {
-  GraphQLFloat,
-  GraphQLObjectType,
-  GraphQLSchema,
-  GraphQLString,
-  buildSchema,
-} from "graphql";
+
 import { graphqlHTTP } from "express-graphql";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { loadFilesSync } from "@graphql-tools/load-files";
 
-const schema = buildSchema(`
-  type Query {
-    products: [Product]
-    orders: [Order]
-  }
+import orders from "./orders/orders.model";
+import products from "./products/products.model";
 
-  type Product {
-    id: ID!
-    description: String!
-    reviews: [Review]
-    price: Float!
-  }
-
-  type Review {
-    rating: Int!
-    comment: String
-  }
-
-  type Order {
-    data: String!
-    subtotal: Float!
-    items: [OrderItem]
-  }
-
-  type OrderItem {
-    product: Product!
-    quantity: Int!
-  }
-`);
-
-const rootValue = {
-  products: [
-    { id: "redshoe", description: "Red Shoe", price: 42.12 },
-    { id: "redshbulejeanoe", description: "Blue Jeans", price: 55.55 },
-  ],
-  orders: [
-    {
-      date: "2005-05-05",
-      subtotal: 90.22,
-      items: [
-        {
-          product: { id: "redshoe", description: "Old Red Shoe", price: 45.11 },
-          quantity: 2,
-        },
-      ],
-    },
-  ],
-};
+const typesArray = loadFilesSync("**/*", { extensions: ["graphql"] });
+const schema = makeExecutableSchema({ typeDefs: [typesArray] });
+const rootValue = { products, orders };
 
 const app = express();
 app.use("/graphql", graphqlHTTP({ schema, rootValue, graphiql: true }));
