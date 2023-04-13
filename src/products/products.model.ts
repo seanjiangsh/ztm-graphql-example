@@ -3,4 +3,8 @@ const products = [
   { id: "redshbulejeanoe", description: "Blue Jeans", price: 55.55 },
 ];
 
-export default products;
+function getAllProducts() {
+  return products;
+}
+
+export { getAllProducts };

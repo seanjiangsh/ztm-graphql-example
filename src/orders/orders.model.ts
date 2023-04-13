@@ -11,4 +11,8 @@ const orders = [
   },
 ];
 
-export default orders;
+function getAllOrders() {
+  return orders;
+}
+
+export { getAllOrders };
